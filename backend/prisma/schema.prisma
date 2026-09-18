@@ -1,0 +1,270 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  RECEPTIONIST
+  DOCTOR
+  LAB_TECHNICIAN
+  PHARMACIST
+  NURSE
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum BedStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole
+  phone        String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  doctor       Doctor?
+  nurse Nurse?
+}
+
+model Department {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  doctors     Doctor[]
+  appointments Appointment[]
+  nurses Nurse[]
+}
+
+model Patient {
+  id          Int      @id @default(autoincrement())
+  patientCode String   @unique
+  firstName   String
+  lastName    String?
+  dateOfBirth DateTime?
+  gender      Gender?
+  phone       String?
+  email       String?
+  address     String?
+  bloodGroup  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  appointments Appointment[]
+  clinicalRecords ClinicalRecord[]
+  dispensations   Dispensation[]
+  vitals Vitals[]
+}
+
+model Doctor {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  departmentId Int
+  specialization String?
+  licenseNumber String? @unique
+  createdAt    DateTime @default(now())
+
+  user         User       @relation(fields: [userId], references: [id])
+  department   Department @relation(fields: [departmentId], references: [id])
+  appointments Appointment[]
+  clinicalRecords ClinicalRecord[]
+}
+
+model Appointment {
+  id           Int               @id @default(autoincrement())
+  patientId    Int
+  doctorId     Int
+  departmentId Int
+  appointmentDate DateTime
+  tokenNumber  Int?
+  status       AppointmentStatus @default(SCHEDULED)
+  reason       String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  patient      Patient     @relation(fields: [patientId], references: [id])
+  doctor       Doctor      @relation(fields: [doctorId], references: [id])
+  department   Department  @relation(fields: [departmentId], references: [id])
+
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([appointmentDate])
+  clinicalRecord ClinicalRecord[]
+}
+
+model ClinicalRecord {
+  id             Int      @id @default(autoincrement())
+  patientId      Int
+  doctorId       Int
+  appointmentId  Int?     @unique
+  symptoms       String?
+  diagnosis      String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  patient        Patient      @relation(fields: [patientId], references: [id])
+  doctor         Doctor       @relation(fields: [doctorId], references: [id])
+  appointment    Appointment? @relation(fields: [appointmentId], references: [id])
+
+  prescriptions  Prescription[]
+  labTests       LabTest[]
+
+  @@index([patientId])
+  @@index([doctorId])
+}
+
+model Prescription {
+  id              Int      @id @default(autoincrement())
+  clinicalRecordId Int
+  prescribedAt    DateTime @default(now())
+  notes           String?
+
+  clinicalRecord  ClinicalRecord    @relation(fields: [clinicalRecordId], references: [id])
+  items           PrescriptionItem[]
+}
+
+model PrescriptionItem {
+  id             Int      @id @default(autoincrement())
+  prescriptionId Int
+  medicineId     Int
+  dosage         String?
+  frequency      String?
+  duration       String?
+  quantity       Int?
+
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
+  medicine       Medicine     @relation(fields: [medicineId], references: [id])
+}
+
+model LabTest {
+  id              Int      @id @default(autoincrement())
+  clinicalRecordId Int
+  testName        String
+  status          String   @default("PENDING")
+  requestedAt     DateTime @default(now())
+
+  clinicalRecord  ClinicalRecord @relation(fields: [clinicalRecordId], references: [id])
+  result          LabResult?
+}
+
+model LabResult {
+  id          Int      @id @default(autoincrement())
+  labTestId   Int      @unique
+  result      String?
+  remarks     String?
+  completedAt DateTime?
+
+  labTest     LabTest @relation(fields: [labTestId], references: [id])
+}
+
+model Medicine {
+  id          Int      @id @default(autoincrement())
+  name        String
+  genericName String?
+  manufacturer String?
+  unit        String?
+  createdAt   DateTime @default(now())
+
+  prescriptionItems PrescriptionItem[]
+  inventory         Inventory?
+  dispensations Dispensation[]
+}
+
+model Inventory {
+  id          Int      @id @default(autoincrement())
+  medicineId  Int      @unique
+  quantity    Int      @default(0)
+  reorderLevel Int     @default(10)
+  updatedAt   DateTime @updatedAt
+
+  medicine    Medicine @relation(fields: [medicineId], references: [id])
+}
+
+model Dispensation {
+  id          Int      @id @default(autoincrement())
+  medicineId  Int
+  patientId   Int
+  quantity    Int
+  dispensedAt DateTime @default(now())
+
+  medicine    Medicine @relation(fields: [medicineId], references: [id])
+  patient     Patient  @relation(fields: [patientId], references: [id])
+}
+
+model Ward {
+  id          Int      @id @default(autoincrement())
+  name        String
+  wardType    String?
+  floor       String?
+  capacity    Int
+  createdAt   DateTime @default(now())
+
+  beds        Bed[]
+}
+
+model Bed {
+  id          Int       @id @default(autoincrement())
+  wardId      Int
+  bedNumber   String
+  status      BedStatus @default(AVAILABLE)
+  createdAt   DateTime  @default(now())
+
+  ward        Ward      @relation(fields: [wardId], references: [id])
+
+  @@unique([wardId, bedNumber])
+}
+
+model Nurse {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique
+  departmentId Int?
+  createdAt   DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id])
+  department  Department? @relation(fields: [departmentId], references: [id])
+  vitals      Vitals[]
+}
+
+model Vitals {
+  id          Int      @id @default(autoincrement())
+  patientId   Int
+  nurseId     Int?
+  temperature Float?
+  bloodPressure String?
+  heartRate   Int?
+  respiratoryRate Int?
+  oxygenSaturation Float?
+  weight      Float?
+  recordedAt  DateTime @default(now())
+
+  patient     Patient @relation(fields: [patientId], references: [id])
+  nurse       Nurse?  @relation(fields: [nurseId], references: [id])
+
+  @@index([patientId])
+  @@index([recordedAt])
+}
