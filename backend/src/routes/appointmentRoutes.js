@@ -1,12 +1,12 @@
 const express = require("express");
 
 const {
-  createPatient,
-  getPatients,
-  getPatientById,
-  updatePatient,
-  deletePatient,
-} = require("../controllers/patientController");
+  createAppointment,
+  getAppointments,
+  getAppointmentById,
+  updateAppointment,
+  cancelAppointment,
+} = require("../controllers/appointmentController");
 
 const {
   authenticateToken,
@@ -19,35 +19,35 @@ router.post(
   "/",
   authenticateToken,
   authorizeRoles("ADMIN", "RECEPTIONIST"),
-  createPatient,
+  createAppointment,
 );
 
 router.get(
   "/",
   authenticateToken,
   authorizeRoles("ADMIN", "RECEPTIONIST", "DOCTOR", "NURSE"),
-  getPatients,
+  getAppointments,
 );
 
 router.get(
   "/:id",
   authenticateToken,
   authorizeRoles("ADMIN", "RECEPTIONIST", "DOCTOR", "NURSE"),
-  getPatientById,
+  getAppointmentById,
 );
 
 router.put(
   "/:id",
   authenticateToken,
   authorizeRoles("ADMIN", "RECEPTIONIST"),
-  updatePatient,
+  updateAppointment,
 );
 
-router.delete(
-  "/:id",
+router.patch(
+  "/:id/cancel",
   authenticateToken,
-  authorizeRoles("ADMIN"),
-  deletePatient,
+  authorizeRoles("ADMIN", "RECEPTIONIST"),
+  cancelAppointment,
 );
 
 module.exports = router;
