@@ -4,6 +4,10 @@ const appointmentRoutes = require("./routes/appointmentRoutes");
 const clinicalRecordRoutes = require("./routes/clinicalRecordRoutes");
 const prescriptionRoutes = require("./routes/prescriptionRoutes");
 const labRoutes = require("./routes/labRoutes");
+const medicineRoutes = require("./routes/medicineRoutes");
+const inventoryRoutes = require("./routes/inventoryRoutes");
+const dispensationRoutes = require("./routes/dispensationRoutes");
+
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
@@ -20,6 +24,9 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/clinical-records", clinicalRecordRoutes);
 app.use("/api/prescriptions", prescriptionRoutes);
 app.use("/api/lab", labRoutes);
+app.use("/api/medicines", medicineRoutes);
+app.use("/api/inventory", inventoryRoutes);
+app.use("/api/dispensations", dispensationRoutes);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
