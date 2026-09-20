@@ -3,6 +3,7 @@ const patientRoutes = require("./routes/patientRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
 const clinicalRecordRoutes = require("./routes/clinicalRecordRoutes");
 const prescriptionRoutes = require("./routes/prescriptionRoutes");
+const labRoutes = require("./routes/labRoutes");
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
@@ -18,6 +19,7 @@ app.use("/api/patients", patientRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/clinical-records", clinicalRecordRoutes);
 app.use("/api/prescriptions", prescriptionRoutes);
+app.use("/api/lab", labRoutes);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
