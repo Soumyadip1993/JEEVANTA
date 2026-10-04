@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const prisma = require("./config/prisma");
 
 async function createAdmin() {

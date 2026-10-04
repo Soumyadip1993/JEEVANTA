@@ -1,8 +1,6 @@
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const prisma = require("../config/prisma");
-
-const JWT_SECRET = process.env.JWT_SECRET || "jeevanta-jwt-secret-key-2026";
 
 const login = async (req, res) => {
   console.log("LOGIN ROUTE HIT");
@@ -49,7 +47,7 @@ const login = async (req, res) => {
         userId: user.id,
         role: user.role,
       },
-      JWT_SECRET,
+      process.env.JWT_SECRET,
       {
         expiresIn: process.env.JWT_EXPIRES_IN || "1d",
       },

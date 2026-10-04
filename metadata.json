@@ -1,8 +1,0 @@
-{
-  "name": "Jeevanta Hospital Management System",
-  "description": "Hospital management system for patient records, appointments, clinical data, and pharmacy.",
-  "permissions": [],
-  "capabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}
