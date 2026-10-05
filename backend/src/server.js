@@ -1,3 +1,8 @@
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+require("dotenv").config();
+
 const authRoutes = require("./routes/authRoutes");
 const patientRoutes = require("./routes/patientRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
@@ -7,14 +12,6 @@ const labRoutes = require("./routes/labRoutes");
 const medicineRoutes = require("./routes/medicineRoutes");
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const dispensationRoutes = require("./routes/dispensationRoutes");
-const nurseRoutes = require("./routes/nurseRoutes");
-const vitalsRoutes = require("./routes/vitalsRoutes");
-const admissionRoutes = require("./routes/admissionRoutes");
-const bedRoutes = require("./routes/bedRoutes");
-
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
 
 const pool = require("./config/database");
 
@@ -31,10 +28,6 @@ app.use("/api/lab", labRoutes);
 app.use("/api/medicines", medicineRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/dispensations", dispensationRoutes);
-app.use("/api/nurses", nurseRoutes);
-app.use("/api/vitals", vitalsRoutes);
-app.use("/api/admissions", admissionRoutes);
-app.use("/api/beds", bedRoutes);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
@@ -62,8 +55,26 @@ app.get("/api/db-health", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+// Serve frontend static build
+const frontendDist = path.join(__dirname, "../../frontend/dist");
+app.use(express.static(frontendDist));
 
-app.listen(PORT, () => {
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api/")) {
+    return res.status(404).json({
+      success: false,
+      message: "API endpoint not found",
+    });
+  }
+  res.sendFile(path.join(frontendDist, "index.html"), (err) => {
+    if (err) {
+      res.status(200).send("Jeevanta API is running");
+    }
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Jeevanta backend running on port ${PORT}`);
 });

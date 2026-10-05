@@ -1,0 +1,24 @@
+{
+  "name": "jeevanta",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "build:frontend": "npm run build --workspace=frontend",
+    "build": "npm run build:frontend",
+    "dev": "npm run build:frontend && node backend/src/server.js",
+    "start": "node backend/src/server.js",
+    "lint": "npm run lint --workspace=frontend"
+  },
+  "dependencies": {
+    "lucide-react": "^1.48.0",
+    "tailwindcss": "3.4.17"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.28"
+  }
+}

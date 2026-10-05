@@ -1,10 +1,4 @@
-# Jeevanta – Government Hospital Management System
-
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Jeevanta-success)](https://jeevanta-frontend.onrender.com)
-
-## Live Demo
-
-[Open Jeevanta](https://jeevanta-frontend.onrender.com)
+# Jeevanta
 
 ## Government Hospital Management System
 

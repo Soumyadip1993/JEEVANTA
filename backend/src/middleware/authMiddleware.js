@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 
+const JWT_SECRET = process.env.JWT_SECRET || "jeevanta-jwt-secret-key-2026";
+
 const authenticateToken = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -13,7 +15,7 @@ const authenticateToken = (req, res, next) => {
 
     const token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
 
     req.user = decoded;
 
