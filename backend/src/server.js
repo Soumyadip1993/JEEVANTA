@@ -7,6 +7,10 @@ const labRoutes = require("./routes/labRoutes");
 const medicineRoutes = require("./routes/medicineRoutes");
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const dispensationRoutes = require("./routes/dispensationRoutes");
+const nurseRoutes = require("./routes/nurseRoutes");
+const vitalsRoutes = require("./routes/vitalsRoutes");
+const admissionRoutes = require("./routes/admissionRoutes");
+const bedRoutes = require("./routes/bedRoutes");
 
 const express = require("express");
 const cors = require("cors");
@@ -27,6 +31,10 @@ app.use("/api/lab", labRoutes);
 app.use("/api/medicines", medicineRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/dispensations", dispensationRoutes);
+app.use("/api/nurses", nurseRoutes);
+app.use("/api/vitals", vitalsRoutes);
+app.use("/api/admissions", admissionRoutes);
+app.use("/api/beds", bedRoutes);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
