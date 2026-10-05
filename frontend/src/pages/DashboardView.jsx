@@ -21,9 +21,105 @@ import {
   Download
 } from 'lucide-react';
 
+// Extended Consultation Queue dataset supporting Today / Week / Month historical expansion
+const consultationQueueExtended = [
+  // Today's base queue
+  { token: 'GM-001', patient: 'Ramesh Patel', patientId: 'PID-PL00124', time: '09:30 AM', date: '10 Nov 2026', fullDateTime: '10 Nov • 09:30 AM', category: 'General OPD', status: 'Completed', stage: 'completed' },
+  { token: 'GM-002', patient: 'Anita Sharma', patientId: 'PID-PL00125', time: '09:45 AM', date: '10 Nov 2026', fullDateTime: '10 Nov • 09:45 AM', category: 'General OPD', status: 'In consultation', stage: 'in_consultation' },
+  { token: 'GM-003', patient: 'Astha Sharma', patientId: 'PID-PL00123', time: '10:00 AM', date: '10 Nov 2026', fullDateTime: '10 Nov • 10:00 AM', category: 'Pediatrics OPD', status: 'Waiting', stage: 'waiting' },
+  { token: 'GM-004', patient: 'Neha Das', patientId: 'PID-PL00127', time: '10:15 AM', date: '10 Nov 2026', fullDateTime: '10 Nov • 10:15 AM', category: 'General OPD', status: 'Waiting', stage: 'waiting' },
+  { token: 'GM-005', patient: 'Sanjay Roy', patientId: 'PID-PL00128', time: '10:30 AM', date: '10 Nov 2026', fullDateTime: '10 Nov • 10:30 AM', category: 'Cardiology Review', status: 'Waiting', stage: 'waiting' },
+
+  // Week additions (past 7 days)
+  { token: 'GM-098', patient: 'Kavita Nair', patientId: 'PID-PL00129', time: '02:15 PM', date: '09 Nov 2026', fullDateTime: '09 Nov • 02:15 PM', category: 'General OPD', status: 'Completed', stage: 'completed' },
+  { token: 'GM-092', patient: 'Manoj Gupta', patientId: 'PID-PL00130', time: '11:30 AM', date: '08 Nov 2026', fullDateTime: '08 Nov • 11:30 AM', category: 'Follow-up OPD', status: 'Completed', stage: 'completed' },
+  { token: 'GM-085', patient: 'Sunita Sen', patientId: 'PID-PL00131', time: '10:45 AM', date: '07 Nov 2026', fullDateTime: '07 Nov • 10:45 AM', category: 'General OPD', status: 'Completed', stage: 'completed' },
+  { token: 'GM-078', patient: 'Rajesh Varma', patientId: 'PID-PL00132', time: '04:00 PM', date: '06 Nov 2026', fullDateTime: '06 Nov • 04:00 PM', category: 'Routine Health Check', status: 'Completed', stage: 'completed' },
+  { token: 'GM-071', patient: 'Deepa Joshi', patientId: 'PID-PL00133', time: '09:15 AM', date: '05 Nov 2026', fullDateTime: '05 Nov • 09:15 AM', category: 'General OPD', status: 'Completed', stage: 'completed' },
+  { token: 'GM-064', patient: 'Tariq Ahmad', patientId: 'PID-PL00134', time: '12:20 PM', date: '04 Nov 2026', fullDateTime: '04 Nov • 12:20 PM', category: 'Chronic Care', status: 'Completed', stage: 'completed' },
+
+  // Month additions (past 30 days)
+  { token: 'GM-056', patient: 'Pooja Iyer', patientId: 'PID-PL00135', time: '03:30 PM', date: '02 Nov 2026', fullDateTime: '02 Nov • 03:30 PM', category: 'Endocrine OPD', status: 'Completed', stage: 'completed' },
+  { token: 'GM-049', patient: 'Vikram Singhania', patientId: 'PID-PL00136', time: '11:00 AM', date: '29 Oct 2026', fullDateTime: '29 Oct • 11:00 AM', category: 'General OPD', status: 'Completed', stage: 'completed' },
+  { token: 'GM-041', patient: 'Bina Das', patientId: 'PID-PL00137', time: '10:15 AM', date: '26 Oct 2026', fullDateTime: '26 Oct • 10:15 AM', category: 'Geriatric OPD', status: 'Completed', stage: 'completed' },
+  { token: 'GM-034', patient: 'Harish Chandra', patientId: 'PID-PL00138', time: '02:40 PM', date: '22 Oct 2026', fullDateTime: '22 Oct • 02:40 PM', category: 'Hypertension Check', status: 'Completed', stage: 'completed' },
+  { token: 'GM-028', patient: 'Geeta Rao', patientId: 'PID-PL00139', time: '09:50 AM', date: '18 Oct 2026', fullDateTime: '18 Oct • 09:50 AM', category: 'General OPD', status: 'Completed', stage: 'completed' },
+  { token: 'GM-021', patient: 'Alok Verma', patientId: 'PID-PL00140', time: '04:15 PM', date: '15 Oct 2026', fullDateTime: '15 Oct • 04:15 PM', category: 'Follow-up Review', status: 'Completed', stage: 'completed' },
+  { token: 'GM-014', patient: 'Meera Sen', patientId: 'PID-PL00141', time: '11:10 AM', date: '12 Oct 2026', fullDateTime: '12 Oct • 11:10 AM', category: 'General OPD', status: 'Completed', stage: 'completed' }
+];
+
+// Extended Urgent Diagnostic Reviews dataset supporting Today / Week / Month historical expansion
+const diagnosticReviewsExtended = [
+  // Today's base
+  { id: 'LR-01', patient: 'Priya Sharma', test: 'Complete Blood Count (CBC)', date: '10 Nov 2026', fullDate: '10 Nov 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-02', patient: 'Vikram Singh', test: 'Fasting Blood Sugar (FBS)', date: '10 Nov 2026', fullDate: '10 Nov 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-03', patient: 'Neha Patel', test: 'Thyroid Profile (TSH/T3/T4)', date: '10 Nov 2026', fullDate: '10 Nov 2026', status: 'Processing', statusColor: 'bg-amber-50 text-amber-700 border-amber-200' },
+  { id: 'LR-04', patient: 'Suresh Rao', test: 'Comprehensive Lipid Profile', date: '09 Nov 2026', fullDate: '09 Nov 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-05', patient: 'Meena Kumari', test: 'Urine Routine & Microscopic', date: '09 Nov 2026', fullDate: '09 Nov 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+
+  // Week additions (past 7 days)
+  { id: 'LR-06', patient: 'Dilip Kumar', test: 'Renal Function Panel (KFT)', date: '08 Nov 2026', fullDate: '08 Nov 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-07', patient: 'Sunita Yadav', test: 'Liver Function Panel (LFT)', date: '07 Nov 2026', fullDate: '07 Nov 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-08', patient: 'Harish Chandra', test: 'HbA1c Glycated Hemoglobin', date: '06 Nov 2026', fullDate: '06 Nov 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-09', patient: 'Anita Desai', test: 'Serum Electrolytes (Na/K/Cl)', date: '05 Nov 2026', fullDate: '05 Nov 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-10', patient: 'Rohit Bansal', test: 'Dengue NS1 Antigen & Serology', date: '04 Nov 2026', fullDate: '04 Nov 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+
+  // Month additions (past 30 days)
+  { id: 'LR-11', patient: 'Ritu Saxena', test: 'Cardiac Biomarkers (Troponin I)', date: '01 Nov 2026', fullDate: '01 Nov 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-12', patient: 'Ashok Kulkarni', test: 'Vitamin D3 & B12 Comprehensive', date: '28 Oct 2026', fullDate: '28 Oct 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-13', patient: 'Farida Begum', test: 'Coagulation Profile (PT/INR)', date: '25 Oct 2026', fullDate: '25 Oct 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-14', patient: 'Tarun Biswas', test: 'Ultrasound Whole Abdomen', date: '21 Oct 2026', fullDate: '21 Oct 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-15', patient: 'Shweta Hegde', test: 'Stool Occult Blood (FOBT)', date: '17 Oct 2026', fullDate: '17 Oct 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 'LR-16', patient: 'Devendra Singh', test: 'High-Sensitivity CRP (hs-CRP)', date: '13 Oct 2026', fullDate: '13 Oct 2026', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' }
+];
+
+// Extended Receptionist Appointments dataset supporting Today / Week / Month expansion
+const appointmentsExtended = [
+  // Today's base
+  { id: 1, name: 'Sunita Sharma', time: '09:00 AM', date: '10 Nov 2026', type: 'General Medicine', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 2, name: 'Rajesh Kumar', time: '09:30 AM', date: '10 Nov 2026', type: 'Orthopedics', status: 'In consultation', statusColor: 'bg-sky-50 text-sky-700 border-sky-200' },
+  { id: 3, name: 'Arjun Mehta', time: '10:00 AM', date: '10 Nov 2026', type: 'Pediatrics', status: 'Waiting', statusColor: 'bg-amber-50 text-amber-700 border-amber-200' },
+  { id: 4, name: 'Farah Khan', time: '10:30 AM', date: '10 Nov 2026', type: 'Gynecology', status: 'Scheduled', statusColor: 'bg-blue-50 text-blue-700 border-blue-200' },
+  { id: 5, name: 'Mohan Lal', time: '11:00 AM', date: '10 Nov 2026', type: 'General Medicine', status: 'Scheduled', statusColor: 'bg-blue-50 text-blue-700 border-blue-200' },
+
+  // Week additions
+  { id: 6, name: 'Kiran Bedi', time: '02:00 PM', date: '09 Nov 2026', type: 'Cardiology', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 7, name: 'Dinesh Shah', time: '11:30 AM', date: '08 Nov 2026', type: 'Dermatology', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 8, name: 'Nalini Iyer', time: '10:15 AM', date: '07 Nov 2026', type: 'General Medicine', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 9, name: 'Vikrant Roy', time: '04:30 PM', date: '06 Nov 2026', type: 'ENT', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 10, name: 'Ananya Ghosh', time: '09:45 AM', date: '05 Nov 2026', type: 'Pediatrics', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+
+  // Month additions
+  { id: 11, name: 'Om Prakash', time: '03:15 PM', date: '02 Nov 2026', type: 'Ophthalmology', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 12, name: 'Geeta Nair', time: '11:00 AM', date: '29 Oct 2026', type: 'Gynecology', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 13, name: 'Sanjay Joshi', time: '10:00 AM', date: '25 Oct 2026', type: 'General Medicine', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 14, name: 'Pallavi Rao', time: '01:30 PM', date: '21 Oct 2026', type: 'Neurology', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 15, name: 'Rameshwar Dayal', time: '10:45 AM', date: '16 Oct 2026', type: 'Orthopedics', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  { id: 16, name: 'Shalini Verma', time: '04:00 PM', date: '12 Oct 2026', type: 'General Medicine', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' }
+];
+
 export const DashboardView = () => {
   const { currentRole, currentUser, setActiveTab, showToast, isAuthorizedTab, hasPermission } = useHospital();
   const [timeframe, setTimeframe] = useState('Today');
+
+  // Dynamic datasets expanded based on active timeframe
+  const consultationQueue = timeframe === 'Today'
+    ? consultationQueueExtended.slice(0, 5)
+    : timeframe === 'Week'
+    ? consultationQueueExtended.slice(0, 11)
+    : consultationQueueExtended;
+
+  const diagnosticReviews = timeframe === 'Today'
+    ? diagnosticReviewsExtended.slice(0, 5)
+    : timeframe === 'Week'
+    ? diagnosticReviewsExtended.slice(0, 10)
+    : diagnosticReviewsExtended;
+
+  const receptionistAppointments = timeframe === 'Today'
+    ? appointmentsExtended.slice(0, 5)
+    : timeframe === 'Week'
+    ? appointmentsExtended.slice(0, 10)
+    : appointmentsExtended;
 
   // Helper to format greeting and title based on current actor
   const getActorMeta = () => {
@@ -460,12 +556,20 @@ export const DashboardView = () => {
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
             <div className="p-8 sm:p-10 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Today's Consultation Queue</h2>
-                <p className="text-sm text-slate-400 mt-2 leading-relaxed">Assigned outpatient triage queue for your room</p>
+                <h2 className="text-xl font-bold text-slate-900">
+                  {timeframe === 'Today' ? "Today's Consultation Queue" : timeframe === 'Week' ? "Weekly Consultation Queue & Records" : "Monthly Consultation Archive"}
+                </h2>
+                <p className="text-sm text-slate-400 mt-2 leading-relaxed">
+                  {timeframe === 'Today' 
+                    ? "Assigned outpatient triage queue for your room" 
+                    : timeframe === 'Week' 
+                    ? "Past 7 days aggregated clinical consultation history" 
+                    : "Past 30 days comprehensive outpatient consultation records"}
+                </p>
               </div>
               <button 
                 onClick={() => setActiveTab('OPD & Consultation')}
-                className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer px-4 py-2 bg-blue-50 rounded-xl"
+                className="text-sm font-bold text-[#163956] hover:text-[#102a40] transition-colors cursor-pointer px-4 py-2 bg-blue-50 rounded-xl"
               >
                 Open OPD Desk
               </button>
@@ -476,19 +580,26 @@ export const DashboardView = () => {
                   <tr>
                     <th className="py-6 px-8">Token</th>
                     <th className="py-6 px-8">Patient Name</th>
-                    <th className="py-6 px-8">Time</th>
+                    <th className="py-6 px-8">{timeframe === 'Today' ? 'Time' : 'Date & Time'}</th>
                     <th className="py-6 px-8">Category</th>
                     <th className="py-6 px-8">Stage</th>
                     <th className="py-6 px-8 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700 text-sm">
-                  {initialData.queue.map((item) => (
+                  {consultationQueue.map((item) => (
                     <tr key={item.token} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-6 px-8 font-mono font-bold text-blue-700">{item.token}</td>
-                      <td className="py-6 px-8 font-bold text-slate-900">{item.patient}</td>
-                      <td className="py-6 px-8 text-slate-500 tabular-nums">{item.time}</td>
-                      <td className="py-6 px-8 text-slate-600">General OPD</td>
+                      <td className="py-6 px-8 font-mono font-bold text-[#163956]">{item.token}</td>
+                      <td className="py-6 px-8 font-bold text-slate-900">
+                        {item.patient}
+                        {item.patientId && (
+                          <span className="block text-xs font-normal text-slate-400 font-mono mt-0.5">{item.patientId}</span>
+                        )}
+                      </td>
+                      <td className="py-6 px-8 text-slate-500 tabular-nums">
+                        {timeframe === 'Today' ? item.time : (item.fullDateTime || `${item.date || '10 Nov'} • ${item.time}`)}
+                      </td>
+                      <td className="py-6 px-8 text-slate-600">{item.category || 'General OPD'}</td>
                       <td className="py-6 px-8">
                         <span className={`inline-block px-4 py-2 rounded-full text-xs font-bold border ${
                           item.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
@@ -501,7 +612,7 @@ export const DashboardView = () => {
                       <td className="py-6 px-8 text-right">
                         <button 
                           onClick={() => setActiveTab('OPD & Consultation')}
-                          className="text-blue-600 hover:text-blue-800 font-bold cursor-pointer"
+                          className="text-[#163956] hover:text-[#102a40] font-bold cursor-pointer"
                         >
                           Consult
                         </button>
@@ -519,12 +630,16 @@ export const DashboardView = () => {
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
             <div className="p-8 sm:p-10 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Today's Scheduled Appointments</h2>
-                <p className="text-sm text-slate-400 mt-2 leading-relaxed">Patient check-in verification and desk triage</p>
+                <h2 className="text-xl font-bold text-slate-900">
+                  {timeframe === 'Today' ? "Today's Scheduled Appointments" : timeframe === 'Week' ? "Weekly Scheduled Appointments" : "Monthly Scheduled Appointments"}
+                </h2>
+                <p className="text-sm text-slate-400 mt-2 leading-relaxed">
+                  {timeframe === 'Today' ? "Patient check-in verification and desk triage" : "Aggregated patient bookings and check-in history"}
+                </p>
               </div>
               <button 
                 onClick={() => setActiveTab('Appointments')}
-                className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer px-4 py-2 bg-blue-50 rounded-xl"
+                className="text-sm font-bold text-[#163956] hover:text-[#102a40] transition-colors cursor-pointer px-4 py-2 bg-blue-50 rounded-xl"
               >
                 All Bookings
               </button>
@@ -533,7 +648,7 @@ export const DashboardView = () => {
               <table className="w-full min-w-[640px] text-left">
                 <thead className="bg-slate-50/80 border-b border-slate-100 text-slate-500 font-bold text-xs uppercase tracking-wider">
                   <tr>
-                    <th className="py-6 px-8">Time</th>
+                    <th className="py-6 px-8">{timeframe === 'Today' ? 'Time' : 'Date & Time'}</th>
                     <th className="py-6 px-8">Patient Name</th>
                     <th className="py-6 px-8">Department</th>
                     <th className="py-6 px-8">Status</th>
@@ -541,9 +656,11 @@ export const DashboardView = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700 text-sm">
-                  {initialData.todayAppointments.map((apt) => (
+                  {receptionistAppointments.map((apt) => (
                     <tr key={apt.id} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-6 px-8 font-mono text-slate-900 font-semibold tabular-nums">{apt.time}</td>
+                      <td className="py-6 px-8 font-mono text-slate-900 font-semibold tabular-nums">
+                        {timeframe === 'Today' ? apt.time : `${apt.date} • ${apt.time}`}
+                      </td>
                       <td className="py-6 px-8 font-bold text-slate-900">{apt.name}</td>
                       <td className="py-6 px-8 text-slate-600">{apt.type}</td>
                       <td className="py-6 px-8">
@@ -554,7 +671,7 @@ export const DashboardView = () => {
                       <td className="py-6 px-8 text-right">
                         <button 
                           onClick={() => showToast(`Check-in token printed for ${apt.name}`)}
-                          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs cursor-pointer shadow-xs"
+                          className="px-4 py-2 rounded-xl bg-[#163956] hover:bg-[#102a40] text-white font-semibold text-xs cursor-pointer shadow-xs"
                         >
                           Check In
                         </button>
@@ -905,12 +1022,20 @@ export const DashboardView = () => {
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
             <div className="p-8 sm:p-10 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Urgent Diagnostic Reviews</h2>
-                <p className="text-sm text-slate-400 mt-2 leading-relaxed">Pathology tests requiring doctor clinical sign-off</p>
+                <h2 className="text-xl font-bold text-slate-900">
+                  {timeframe === 'Today' ? "Urgent Diagnostic Reviews" : timeframe === 'Week' ? "Weekly Diagnostic Reviews & Reports" : "Monthly Diagnostic Reports Archive"}
+                </h2>
+                <p className="text-sm text-slate-400 mt-2 leading-relaxed">
+                  {timeframe === 'Today' 
+                    ? "Pathology tests requiring doctor clinical sign-off" 
+                    : timeframe === 'Week' 
+                    ? "Past 7 days pathology lab panels and clinical sign-offs" 
+                    : "Past 30 days verified clinical laboratory records"}
+                </p>
               </div>
               <button 
                 onClick={() => setActiveTab('Laboratory')}
-                className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer px-4 py-2 bg-blue-50 rounded-xl"
+                className="text-sm font-bold text-[#163956] hover:text-[#102a40] transition-colors cursor-pointer px-4 py-2 bg-blue-50 rounded-xl"
               >
                 Diagnostic Lab
               </button>
@@ -921,17 +1046,17 @@ export const DashboardView = () => {
                   <tr>
                     <th className="py-6 px-8">Patient Name</th>
                     <th className="py-6 px-8">Test Type</th>
-                    <th className="py-6 px-8">Date</th>
+                    <th className="py-6 px-8">{timeframe === 'Today' ? 'Date' : 'Order Date'}</th>
                     <th className="py-6 px-8">Status</th>
                     <th className="py-6 px-8 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700 text-sm">
-                  {initialData.recentLabReportsList.map((item) => (
+                  {diagnosticReviews.map((item) => (
                     <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
                       <td className="py-6 px-8 font-bold text-slate-900">{item.patient}</td>
                       <td className="py-6 px-8 font-medium text-slate-700">{item.test}</td>
-                      <td className="py-6 px-8 text-slate-500 tabular-nums">{item.date}</td>
+                      <td className="py-6 px-8 text-slate-500 tabular-nums">{item.fullDate || item.date}</td>
                       <td className="py-6 px-8">
                         <span className={`inline-block px-4 py-2 rounded-full text-xs font-bold border ${item.statusColor}`}>
                           {item.status}
@@ -943,7 +1068,7 @@ export const DashboardView = () => {
                             setActiveTab('Laboratory');
                             showToast(`Opening clinical report for ${item.patient}`);
                           }}
-                          className="text-blue-600 hover:text-blue-800 font-bold cursor-pointer"
+                          className="text-[#163956] hover:text-[#102a40] font-bold cursor-pointer"
                         >
                           Review
                         </button>
@@ -961,13 +1086,15 @@ export const DashboardView = () => {
           <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
             <div className="p-8 sm:p-10 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">OPD Lobby Token Queue</h2>
-                <p className="text-sm text-slate-400 mt-2 leading-relaxed">Live patient flow across consultation rooms</p>
+                <h2 className="text-xl font-bold text-slate-900">
+                  {timeframe === 'Today' ? "Today's OPD Queue Tokens" : timeframe === 'Week' ? "Weekly OPD Queue Activity" : "Monthly OPD Queue History"}
+                </h2>
+                <p className="text-sm text-slate-400 mt-2 leading-relaxed">Live token generation and counter queue activity</p>
               </div>
               {isAuthorizedTab('Appointments') && (
                 <button 
                   onClick={() => setActiveTab('Appointments')}
-                  className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors cursor-pointer px-4 py-2 bg-blue-50 rounded-xl"
+                  className="text-sm font-bold text-[#163956] hover:text-[#102a40] transition-colors cursor-pointer px-4 py-2 bg-blue-50 rounded-xl"
                 >
                   Queue Desk
                 </button>
@@ -979,17 +1106,19 @@ export const DashboardView = () => {
                   <tr>
                     <th className="py-6 px-8">Token</th>
                     <th className="py-6 px-8">Patient</th>
-                    <th className="py-6 px-8">Time</th>
+                    <th className="py-6 px-8">{timeframe === 'Today' ? 'Time' : 'Date & Time'}</th>
                     <th className="py-6 px-8">Counter Status</th>
                     <th className="py-6 px-8 text-right">Desk Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700 text-sm">
-                  {initialData.queue.map((q) => (
+                  {consultationQueue.map((q) => (
                     <tr key={q.token} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-6 px-8 font-mono font-bold text-blue-700">{q.token}</td>
+                      <td className="py-6 px-8 font-mono font-bold text-[#163956]">{q.token}</td>
                       <td className="py-6 px-8 font-bold text-slate-900">{q.patient}</td>
-                      <td className="py-6 px-8 text-slate-500 tabular-nums">{q.time}</td>
+                      <td className="py-6 px-8 text-slate-500 tabular-nums">
+                        {timeframe === 'Today' ? q.time : (q.fullDateTime || `${q.date || '10 Nov'} • ${q.time}`)}
+                      </td>
                       <td className="py-6 px-8">
                         <span className={`inline-block px-4 py-2 rounded-full text-xs font-bold border ${
                           q.status === 'Completed' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
@@ -1002,7 +1131,7 @@ export const DashboardView = () => {
                       <td className="py-6 px-8 text-right">
                         <button 
                           onClick={() => showToast(`Called token ${q.token} on lobby speaker`)}
-                          className="text-blue-600 hover:text-blue-800 font-bold cursor-pointer"
+                          className="text-[#163956] hover:text-[#102a40] font-bold cursor-pointer"
                         >
                           Announce
                         </button>
@@ -1353,7 +1482,76 @@ export const DashboardView = () => {
     }
   };
 
-  const metrics = getRoleMetrics();
+  // Dynamic Metric Scaling: Local function that intercepts raw metrics and scales based on selected timeframe
+  const getScaledMetrics = () => {
+    const rawMetrics = getRoleMetrics();
+    if (timeframe === 'Today') return rawMetrics;
+
+    const multiplier = timeframe === 'Week' ? 6 : 24;
+
+    return rawMetrics.map((card) => {
+      let scaledValue = card.value;
+      let scaledTitle = card.title;
+      let scaledSub = card.sub;
+
+      // Handle percentage values (e.g., '82%', '100%')
+      if (typeof card.value === 'string' && card.value.endsWith('%')) {
+        const numericPart = parseInt(card.value.replace('%', ''), 10);
+        if (!isNaN(numericPart)) {
+          if (numericPart === 100) {
+            scaledValue = timeframe === 'Week' ? '99.8%' : '99.5%';
+          } else {
+            scaledValue = `${Math.min(96, numericPart + (timeframe === 'Week' ? 3 : 5))}%`;
+          }
+        }
+      } else if (typeof card.value === 'string' && !isNaN(parseInt(card.value, 10))) {
+        const baseNum = parseInt(card.value.replace(/,/g, ''), 10);
+        const calculated = baseNum * multiplier;
+        scaledValue = calculated.toLocaleString();
+      } else if (typeof card.value === 'number') {
+        scaledValue = (card.value * multiplier).toLocaleString();
+      }
+
+      // Contextual title adjustments
+      if (scaledTitle.includes("Today's")) {
+        scaledTitle = scaledTitle.replace("Today's", timeframe === 'Week' ? "This Week's" : "This Month's");
+      } else if (scaledTitle.includes(" Today")) {
+        scaledTitle = scaledTitle.replace(" Today", timeframe === 'Week' ? " This Week" : " This Month");
+      }
+
+      // Contextual subtitle adjustments
+      if (scaledSub) {
+        if (scaledSub.includes("today")) {
+          scaledSub = scaledSub.replace("today", timeframe === 'Week' ? "this week" : "this month");
+        }
+        if (scaledSub.includes("Today")) {
+          scaledSub = scaledSub.replace("Today", timeframe === 'Week' ? "This Week" : "This Month");
+        }
+        if (scaledSub.includes("morning average")) {
+          scaledSub = scaledSub.replace("morning average", timeframe === 'Week' ? "weekly baseline" : "monthly baseline");
+        }
+        if (scaledSub.includes("Shift")) {
+          scaledSub = scaledSub.replace("Shift", timeframe === 'Week' ? "Weekly Total" : "Monthly Total");
+        }
+        if (scaledSub.includes("Inpatients under")) {
+          scaledSub = timeframe === 'Week' ? "Weekly inpatient rounds tracked" : "Monthly inpatient care volume";
+        }
+        if (scaledSub.includes("in consult")) {
+          scaledSub = timeframe === 'Week' ? "Aggregated weekly consultations" : "Total monthly outpatient visits";
+        }
+      }
+
+      return {
+        ...card,
+        title: scaledTitle,
+        value: scaledValue,
+        sub: scaledSub
+      };
+    });
+  };
+
+  const metrics = getScaledMetrics();
+
   const quickActions = getRoleQuickActions();
   const roleAlerts = getRoleAlerts();
 
@@ -1385,7 +1583,7 @@ export const DashboardView = () => {
                 onClick={() => setTimeframe(tab)}
                 className={`px-6 py-3 rounded-xl transition-all cursor-pointer text-sm font-semibold ${
                   timeframe === tab
-                    ? 'bg-blue-600 text-white shadow-md'
+                    ? 'bg-[#163956] text-white shadow-md'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -1395,10 +1593,14 @@ export const DashboardView = () => {
           </div>
 
           <div className="hidden lg:flex items-center gap-4 text-sm text-slate-600 font-medium bg-white px-6 py-4 rounded-2xl border border-slate-200/90 shadow-sm">
-            <Calendar className="w-6 h-6 text-blue-600 shrink-0" />
+            <Calendar className="w-6 h-6 text-[#163956] shrink-0" />
             <div className="text-right leading-relaxed">
-              <span className="font-bold text-slate-800 block text-base">Monday, 10 Nov 2026</span>
-              <span className="text-sm text-slate-400">10:24 AM</span>
+              <span className="font-bold text-slate-800 block text-base">
+                {timeframe === 'Today' ? 'Monday, 10 Nov 2026' : timeframe === 'Week' ? 'Past 7 Days' : 'Past 30 Days'}
+              </span>
+              <span className="text-sm text-slate-400">
+                {timeframe === 'Today' ? '10:24 AM • Real-time' : timeframe === 'Week' ? '04 Nov – 10 Nov 2026' : '11 Oct – 10 Nov 2026'}
+              </span>
             </div>
           </div>
         </div>

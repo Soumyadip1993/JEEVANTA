@@ -21,6 +21,29 @@ export const DoctorWorkspace = () => {
     showToast 
   } = useHospital();
 
+  const [timeframe, setTimeframe] = useState('Today');
+
+  const doctorScheduleExpanded = [
+    { name: 'Astha Sharma', id: 'PID-PL00123', time: '10:00 AM', date: '10 Nov', complaint: 'Fever for 2 days', isPrimary: true },
+    { name: 'Rohan Verma', id: 'PID-PL00124', time: '10:30 AM', date: '10 Nov', complaint: 'Hypertension evaluation', isPrimary: false },
+    { name: 'Kavita Nair', id: 'PID-PL00129', time: '11:15 AM', date: '09 Nov', complaint: 'Routine follow-up', isPrimary: false },
+    { name: 'Manoj Gupta', id: 'PID-PL00130', time: '02:00 PM', date: '08 Nov', complaint: 'Diabetes mellitus check', isPrimary: false },
+    { name: 'Sunita Sen', id: 'PID-PL00131', time: '09:30 AM', date: '07 Nov', complaint: 'Seasonal cough & allergy', isPrimary: false },
+    { name: 'Rajesh Varma', id: 'PID-PL00132', time: '04:15 PM', date: '06 Nov', complaint: 'Annual executive review', isPrimary: false },
+    { name: 'Deepa Joshi', id: 'PID-PL00133', time: '10:45 AM', date: '05 Nov', complaint: 'Gastroenteritis symptoms', isPrimary: false },
+    { name: 'Pooja Iyer', id: 'PID-PL00135', time: '03:00 PM', date: '02 Nov', complaint: 'Thyroid panel review', isPrimary: false },
+    { name: 'Vikram Singhania', id: 'PID-PL00136', time: '11:30 AM', date: '29 Oct', complaint: 'Chest congestion check', isPrimary: false },
+    { name: 'Harish Chandra', id: 'PID-PL00138', time: '01:15 PM', date: '22 Oct', complaint: 'BP titration consultation', isPrimary: false }
+  ];
+
+  const visibleSchedule = timeframe === 'Today' 
+    ? doctorScheduleExpanded.slice(0, 2) 
+    : timeframe === 'Week' 
+    ? doctorScheduleExpanded.slice(0, 7) 
+    : doctorScheduleExpanded;
+
+  const doctorScaleMultiplier = timeframe === 'Week' ? 6 : timeframe === 'Month' ? 24 : 1;
+
   // Consultation state (Split-Screen, Screen 16)
   const [chiefComplaint, setChiefComplaint] = useState('Fever for 2 days, persistent mild headache and body ache');
   const [diagnosis, setDiagnosis] = useState('Acute viral pyrexia with upper respiratory symptoms');
@@ -92,42 +115,72 @@ export const DoctorWorkspace = () => {
   if (activeTab === 'Dashboard') {
     return (
       <div className="space-y-6 animate-fade-in">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">
-            Clinical Dashboard
-          </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Dr. Amit Sharma (MD) • Department of General Medicine • OPD Station 4
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              Clinical Dashboard
+            </h1>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Dr. Amit Sharma (MD) • Department of General Medicine • OPD Station 4
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-xl border border-slate-200">
+            {['Today', 'Week', 'Month'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setTimeframe(tab)}
+                className={`px-3.5 py-1.5 rounded-lg transition-all cursor-pointer text-xs font-semibold ${
+                  timeframe === tab
+                    ? 'bg-[#163956] text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* 3 Focused Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
             <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-              <span>Today's Patients</span>
-              <Users className="w-4 h-4 text-blue-600" />
+              <span>{timeframe === 'Today' ? "Today's Patients" : timeframe === 'Week' ? "This Week's Patients" : "This Month's Patients"}</span>
+              <Users className="w-4 h-4 text-[#163956]" />
             </div>
-            <div className="mt-2 text-2xl font-bold text-slate-900 tabular-nums">16</div>
-            <div className="mt-1 text-[11px] text-slate-400">8 completed • 8 in queue</div>
+            <div className="mt-2 text-2xl font-bold text-slate-900 tabular-nums">
+              {(16 * doctorScaleMultiplier).toLocaleString()}
+            </div>
+            <div className="mt-1 text-[11px] text-slate-400">
+              {timeframe === 'Today' ? '8 completed • 8 in queue' : timeframe === 'Week' ? '92 completed • 4 in queue' : '376 completed • 8 in queue'}
+            </div>
           </div>
 
           <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
             <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-              <span>Pending Lab Results</span>
+              <span>{timeframe === 'Today' ? "Pending Lab Results" : timeframe === 'Week' ? "Weekly Lab Reviews" : "Monthly Lab Reviews"}</span>
               <FlaskConical className="w-4 h-4 text-amber-600" />
             </div>
-            <div className="mt-2 text-2xl font-bold text-slate-900 tabular-nums">4</div>
-            <div className="mt-1 text-[11px] text-amber-700 font-medium">Pathology lab processing</div>
+            <div className="mt-2 text-2xl font-bold text-slate-900 tabular-nums">
+              {(4 * doctorScaleMultiplier).toLocaleString()}
+            </div>
+            <div className="mt-1 text-[11px] text-amber-700 font-medium">
+              {timeframe === 'Today' ? 'Pathology lab processing' : 'Aggregated diagnostic test reviews'}
+            </div>
           </div>
 
           <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-2xs">
             <div className="flex items-center justify-between text-slate-500 text-xs font-medium">
-              <span>Prescriptions Issued</span>
-              <Pill className="w-4 h-4 text-blue-600" />
+              <span>{timeframe === 'Today' ? "Prescriptions Issued" : timeframe === 'Week' ? "Weekly Prescriptions" : "Monthly Prescriptions"}</span>
+              <Pill className="w-4 h-4 text-[#163956]" />
             </div>
-            <div className="mt-2 text-2xl font-bold text-slate-900 tabular-nums">8</div>
-            <div className="mt-1 text-[11px] text-emerald-700 font-medium">Synced with central pharmacy</div>
+            <div className="mt-2 text-2xl font-bold text-slate-900 tabular-nums">
+              {(8 * doctorScaleMultiplier).toLocaleString()}
+            </div>
+            <div className="mt-1 text-[11px] text-emerald-700 font-medium">
+              {timeframe === 'Today' ? 'Synced with central pharmacy' : 'Dispensed via central pharmacy formulary'}
+            </div>
           </div>
         </div>
 
@@ -203,11 +256,20 @@ export const DoctorWorkspace = () => {
           </div>
         </div>
 
-        {/* Today's Consultations List */}
+        {/* Consultations List with Timeframe Expansion */}
         <div className="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden">
           <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-slate-900">Doctor's OPD Schedule</h2>
-            <span className="text-xs text-slate-400">Showing confirmed consult queue</span>
+            <div>
+              <h2 className="text-sm font-bold text-slate-900">
+                {timeframe === 'Today' ? "Doctor's OPD Schedule (Today)" : timeframe === 'Week' ? "Doctor's OPD Schedule (Past 7 Days)" : "Doctor's OPD Schedule (Past 30 Days)"}
+              </h2>
+              <span className="text-xs text-slate-400">
+                {timeframe === 'Today' ? 'Showing confirmed consult queue' : 'Aggregated consultation records'}
+              </span>
+            </div>
+            <span className="text-xs font-semibold text-[#163956] bg-blue-50 px-3 py-1 rounded-lg">
+              {visibleSchedule.length} appointments
+            </span>
           </div>
 
           <table className="w-full text-left text-sm border-collapse">
@@ -215,40 +277,34 @@ export const DoctorWorkspace = () => {
               <tr className="bg-slate-50/70 border-b border-slate-100 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                 <th className="py-3 px-5">Patient Name</th>
                 <th className="py-3 px-5">Patient ID</th>
-                <th className="py-3 px-5">Time</th>
+                <th className="py-3 px-5">{timeframe === 'Today' ? 'Time' : 'Date & Time'}</th>
                 <th className="py-3 px-5">Chief Complaint</th>
                 <th className="py-3 px-5 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              <tr className="hover:bg-slate-50/70 transition-colors">
-                <td className="py-3.5 px-5 font-semibold text-slate-900 text-xs">Astha Sharma</td>
-                <td className="py-3.5 px-5 font-mono text-[11px] text-slate-400">PID-PL00123</td>
-                <td className="py-3.5 px-5 font-mono text-xs text-blue-600 font-bold">10:00 AM</td>
-                <td className="py-3.5 px-5 text-slate-600 text-xs">Fever for 2 days</td>
-                <td className="py-3.5 px-5 text-right">
-                  <button 
-                    onClick={() => setActiveTab('EMR / Consultation')}
-                    className="h-8 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium shadow-xs cursor-pointer"
-                  >
-                    Open Consultation
-                  </button>
-                </td>
-              </tr>
-              <tr className="hover:bg-slate-50/70 transition-colors">
-                <td className="py-3.5 px-5 font-semibold text-slate-900 text-xs">Rohan Verma</td>
-                <td className="py-3.5 px-5 font-mono text-[11px] text-slate-400">PID-PL00124</td>
-                <td className="py-3.5 px-5 font-mono text-xs text-slate-500">10:30 AM</td>
-                <td className="py-3.5 px-5 text-slate-600 text-xs">Hypertension evaluation</td>
-                <td className="py-3.5 px-5 text-right">
-                  <button 
-                    onClick={() => setActiveTab('EMR / Consultation')}
-                    className="h-8 px-3 bg-white hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-medium border border-slate-200 cursor-pointer"
-                  >
-                    Open Consultation
-                  </button>
-                </td>
-              </tr>
+              {visibleSchedule.map((item, idx) => (
+                <tr key={item.id || idx} className="hover:bg-slate-50/70 transition-colors">
+                  <td className="py-3.5 px-5 font-semibold text-slate-900 text-xs">{item.name}</td>
+                  <td className="py-3.5 px-5 font-mono text-[11px] text-slate-400">{item.id}</td>
+                  <td className="py-3.5 px-5 font-mono text-xs text-[#163956] font-bold">
+                    {timeframe === 'Today' ? item.time : `${item.date} • ${item.time}`}
+                  </td>
+                  <td className="py-3.5 px-5 text-slate-600 text-xs">{item.complaint}</td>
+                  <td className="py-3.5 px-5 text-right">
+                    <button 
+                      onClick={() => setActiveTab('EMR / Consultation')}
+                      className={`h-8 px-3 rounded-lg text-xs font-medium cursor-pointer transition-colors ${
+                        item.isPrimary 
+                          ? 'bg-[#163956] hover:bg-[#102a40] text-white shadow-xs' 
+                          : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200'
+                      }`}
+                    >
+                      Open Consultation
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
