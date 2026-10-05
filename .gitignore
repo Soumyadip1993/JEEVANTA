@@ -16,4 +16,4 @@ build/
 .DS_Store
 
 # IDE files
-.vscode/.env.production
+.env.production
