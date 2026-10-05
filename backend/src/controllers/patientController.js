@@ -63,7 +63,22 @@ const createPatient = async (req, res) => {
 
 const getPatients = async (req, res) => {
   try {
+    if (req.user?.role === "PATIENT") {
+      if (!req.user.patientId) {
+        return res.status(403).json({
+          success: false,
+          message: "Patient profile is not linked to this account",
+        });
+      }
+    }
+
     const patients = await prisma.patient.findMany({
+      where:
+        req.user?.role === "PATIENT"
+          ? {
+              id: req.user.patientId,
+            }
+          : undefined,
       orderBy: {
         createdAt: "desc",
       },
@@ -229,3 +244,9 @@ module.exports = {
   updatePatient,
   deletePatient,
 };
+    if (req.user?.role === "PATIENT" && req.user.patientId !== id) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only access your own patient profile",
+      });
+    }

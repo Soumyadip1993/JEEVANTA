@@ -24,14 +24,14 @@ router.post(
 router.get(
   "/",
   authenticateToken,
-  authorizeRoles("ADMIN", "DOCTOR", "PHARMACIST"),
+  authorizeRoles("ADMIN", "DOCTOR", "PHARMACIST", "PATIENT"),
   getPrescriptions
 );
 
 router.get(
   "/:id",
   authenticateToken,
-  authorizeRoles("ADMIN", "DOCTOR", "PHARMACIST"),
+  authorizeRoles("ADMIN", "DOCTOR", "PHARMACIST", "PATIENT"),
   getPrescriptionById
 );
 

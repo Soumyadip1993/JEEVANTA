@@ -12,8 +12,13 @@ const labRoutes = require("./routes/labRoutes");
 const medicineRoutes = require("./routes/medicineRoutes");
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const dispensationRoutes = require("./routes/dispensationRoutes");
+const nurseRoutes = require("./routes/nurseRoutes");
+const vitalsRoutes = require("./routes/vitalsRoutes");
+const admissionRoutes = require("./routes/admissionRoutes");
+const bedRoutes = require("./routes/bedRoutes");
 
 const pool = require("./config/database");
+const prisma = require("./config/prisma");
 
 const app = express();
 
@@ -28,6 +33,10 @@ app.use("/api/lab", labRoutes);
 app.use("/api/medicines", medicineRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/dispensations", dispensationRoutes);
+app.use("/api/nurses", nurseRoutes);
+app.use("/api/vitals", vitalsRoutes);
+app.use("/api/admissions", admissionRoutes);
+app.use("/api/beds", bedRoutes);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
@@ -75,6 +84,18 @@ app.use((req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Jeevanta backend running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await prisma.$connect();
+    await pool.query("SELECT NOW()");
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Jeevanta backend running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start backend:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();

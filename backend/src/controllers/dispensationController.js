@@ -152,6 +152,13 @@ const getDispensationsByPatient = async (req, res) => {
   try {
     const patientId = Number(req.params.patientId);
 
+    if (req.user?.role === "PATIENT" && req.user.patientId !== patientId) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only access your own dispensations",
+      });
+    }
+
     const patient = await prisma.patient.findUnique({
       where: {
         id: patientId,
