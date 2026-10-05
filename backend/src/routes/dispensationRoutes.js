@@ -33,7 +33,7 @@ router.get(
 router.get(
   "/patient/:patientId",
   authenticateToken,
-  authorizeRoles("ADMIN", "DOCTOR", "PHARMACIST"),
+  authorizeRoles("ADMIN", "DOCTOR", "PHARMACIST", "PATIENT"),
   getDispensationsByPatient
 );
 

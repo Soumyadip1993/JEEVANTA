@@ -79,6 +79,12 @@ const createAppointment = async (req, res) => {
 const getAppointments = async (req, res) => {
   try {
     const appointments = await prisma.appointment.findMany({
+      where:
+        req.user?.role === "PATIENT"
+          ? {
+              patientId: req.user.patientId,
+            }
+          : undefined,
       orderBy: {
         appointmentDate: "asc",
       },
@@ -126,6 +132,16 @@ const getAppointmentById = async (req, res) => {
       });
     }
 
+    if (
+      req.user?.role === "PATIENT" &&
+      req.user.patientId !== appointment.patientId
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only access your own appointments",
+      });
+    }
+
     return res.status(200).json({
       success: true,
       appointment,
@@ -156,6 +172,16 @@ const updateAppointment = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Appointment not found",
+      });
+    }
+
+    if (
+      req.user?.role === "PATIENT" &&
+      req.user.patientId !== existingAppointment.patientId
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only update your own appointments",
       });
     }
 
@@ -216,6 +242,16 @@ const cancelAppointment = async (req, res) => {
       });
     }
 
+    if (
+      req.user?.role === "PATIENT" &&
+      req.user.patientId !== existingAppointment.patientId
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only cancel your own appointments",
+      });
+    }
+
     if (existingAppointment.status === "COMPLETED") {
       return res.status(400).json({
         success: false,
@@ -254,3 +290,17 @@ module.exports = {
   updateAppointment,
   cancelAppointment,
 };
+    if (req.user?.role === "PATIENT") {
+      if (!req.user.patientId) {
+        return res.status(403).json({
+          success: false,
+          message: "Patient profile is not linked to this account",
+        });
+      }
+      if (Number(patientId) !== req.user.patientId) {
+        return res.status(403).json({
+          success: false,
+          message: "Patients can only book appointments for their own profile",
+        });
+      }
+    }

@@ -95,6 +95,12 @@ const createClinicalRecord = async (req, res) => {
 const getClinicalRecords = async (req, res) => {
   try {
     const records = await prisma.clinicalRecord.findMany({
+      where:
+        req.user?.role === "PATIENT"
+          ? {
+              patientId: req.user.patientId,
+            }
+          : undefined,
       orderBy: {
         createdAt: "desc",
       },
@@ -141,6 +147,16 @@ const getClinicalRecordById = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Clinical record not found",
+      });
+    }
+
+    if (
+      req.user?.role === "PATIENT" &&
+      req.user.patientId !== clinicalRecord.patientId
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only access your own clinical records",
       });
     }
 

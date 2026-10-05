@@ -28,7 +28,7 @@ router.post(
 router.get(
   "/tests",
   authenticateToken,
-  authorizeRoles("ADMIN", "DOCTOR", "LAB_TECHNICIAN"),
+  authorizeRoles("ADMIN", "DOCTOR", "LAB_TECHNICIAN", "PATIENT"),
   getLabTests
 );
 
@@ -36,7 +36,7 @@ router.get(
 router.get(
   "/tests/:id",
   authenticateToken,
-  authorizeRoles("ADMIN", "DOCTOR", "LAB_TECHNICIAN"),
+  authorizeRoles("ADMIN", "DOCTOR", "LAB_TECHNICIAN", "PATIENT"),
   getLabTestById
 );
 

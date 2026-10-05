@@ -60,6 +60,14 @@ const createLabTest = async (req, res) => {
 const getLabTests = async (req, res) => {
   try {
     const labTests = await prisma.labTest.findMany({
+      where:
+        req.user?.role === "PATIENT"
+          ? {
+              clinicalRecord: {
+                patientId: req.user.patientId,
+              },
+            }
+          : undefined,
       orderBy: {
         requestedAt: "desc",
       },
@@ -112,6 +120,16 @@ const getLabTestById = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Lab test not found",
+      });
+    }
+
+    if (
+      req.user?.role === "PATIENT" &&
+      req.user.patientId !== labTest.clinicalRecord?.patientId
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only access your own lab tests",
       });
     }
 

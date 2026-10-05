@@ -3,62 +3,36 @@ import { useHospital } from '../context/HospitalContext';
 import { UserPlus, ArrowLeft, ShieldCheck, HeartHandshake } from 'lucide-react';
 
 export const LoginPage = () => {
-  const { login, registerAndLoginPatient } = useHospital();
+  const { login, registerAndLoginPatient, authLoading } = useHospital();
   
   // View toggle: 'login' | 'register_patient'
   const [isRegistering, setIsRegistering] = useState(false);
 
   // Login form state
-  const [username, setUsername] = useState('dr.ananya');
-  const [password, setPassword] = useState('password123');
-  const [workspace, setWorkspace] = useState('Doctor');
+  const [email, setEmail] = useState('admin@jeevanta.gov.in');
+  const [password, setPassword] = useState('Admin@123');
 
   // Patient registration form state
   const [regFullName, setRegFullName] = useState('');
   const [regPhone, setRegPhone] = useState('');
+  const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
 
-  const defaultUsers = {
-    'Doctor': 'dr.ananya',
-    'Receptionist': 'priya.patel',
-    'Nurse': 'nurse.sunita',
-    'Laboratory Technician': 'rahul.mehta',
-    'Pharmacist': 'kavita.sharma',
-    'Administrator': 'rajesh.verma',
-    'Patient': 'ramesh.kumar'
-  };
-
-  const handleWorkspaceChange = (selected) => {
-    setWorkspace(selected);
-    if (defaultUsers[selected]) {
-      setUsername(defaultUsers[selected]);
-    }
-  };
-
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
-    login(username, password, workspace);
+    await login(email, password);
   };
 
-  const handlePatientSignUp = (e) => {
+  const handlePatientSignUp = async (e) => {
     e.preventDefault();
-    if (!regFullName.trim() || !regPhone.trim() || !regPassword.trim()) return;
-    registerAndLoginPatient({
+    if (!regFullName.trim() || !regPhone.trim() || !regPassword.trim() || !regEmail.trim()) return;
+    await registerAndLoginPatient({
       name: regFullName.trim(),
       phone: regPhone.trim(),
+      email: regEmail.trim(),
       password: regPassword
     });
   };
-
-  const workspaceOptions = [
-    'Patient',
-    'Receptionist',
-    'Doctor',
-    'Nurse',
-    'Laboratory Technician',
-    'Pharmacist',
-    'Administrator'
-  ];
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-between text-slate-800 antialiased">

@@ -95,6 +95,14 @@ const createPrescription = async (req, res) => {
 const getPrescriptions = async (req, res) => {
   try {
     const prescriptions = await prisma.prescription.findMany({
+      where:
+        req.user?.role === "PATIENT"
+          ? {
+              clinicalRecord: {
+                patientId: req.user.patientId,
+              },
+            }
+          : undefined,
       orderBy: {
         prescribedAt: "desc",
       },
@@ -150,6 +158,16 @@ const getPrescriptionById = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Prescription not found",
+      });
+    }
+
+    if (
+      req.user?.role === "PATIENT" &&
+      req.user.patientId !== prescription.clinicalRecord?.patientId
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only access your own prescriptions",
       });
     }
 

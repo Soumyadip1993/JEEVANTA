@@ -1,5 +1,5 @@
 const express = require("express");
-const { login } = require("../controllers/authController");
+const { login, registerPatient } = require("../controllers/authController");
 const {
   authenticateToken,
   authorizeRoles,
@@ -8,6 +8,7 @@ const {
 const router = express.Router();
 
 router.post("/login", login);
+router.post("/register/patient", registerPatient);
 
 router.get("/me", authenticateToken, (req, res) => {
   res.status(200).json({
